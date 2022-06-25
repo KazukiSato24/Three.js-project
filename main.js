@@ -1,5 +1,8 @@
 import './style.css'
 import * as THREE from "three";
+import * as dat from "lil-gui";
+
+//UIデバックを実装
 
 //キャンバスの取得
 const canvas = document.querySelector(".webgl");
@@ -41,7 +44,7 @@ const material = new THREE.MeshPhysicalMaterial({
   roughness: 0.336,
   flatShading: true,
   metalness: 0.5,
-})
+});
 
 //メッシュ
 const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.4, 16, 60), material);
@@ -61,5 +64,6 @@ scene.add(mesh1, mesh2, mesh3, mesh4);
 const directionallight = new THREE.DirectionalLight("ffffff", 2);
 directionallight.position.set(0.5, 1, 0);
 scene.add(directionallight);
+
 
 renderer.render(scene, camera);
