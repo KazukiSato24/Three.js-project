@@ -87,14 +87,18 @@ window.addEventListener("resize", () => {
 });
 
 //アニメーション
+const clock = new THREE.Clock();
+
 const animate = () => {
   renderer.render(scene, camera);
   window.requestAnimationFrame(animate);
 
+  let getDeltaTime = clock.getDelta();
+
   //メッシュを回転させる for文
   for (const mesh of meshes) {
-    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.01;
+    mesh.rotation.x += 0.1 * getDeltaTime;
+    mesh.rotation.y += 0.2 * getDeltaTime;
   }
 };
 
