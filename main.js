@@ -1,6 +1,37 @@
 import './style.css'
 import * as THREE from "three";
 import * as dat from "lil-gui";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { CubeReflectionMapping } from 'three';
+
+//フォント
+const fontLoader = new FontLoader();
+console.log(fontLoader);
+
+fontLoader.load('./fonts/droid/droid_serif_regular.typeface.json', function (font) {
+  console.log(font);
+  const textGeometry = new TextGeometry('SAUVAGE', {
+    font: font,
+    size: 0.5,
+    height: 0.5,
+  });
+
+  //フォントマテリアル
+  const textMaterial = new THREE.MeshPhysicalMaterial({
+    emissive: "#d3d9d9",
+    metalness: 1,
+    roughness: 0.5,
+    clearcoat: 1,
+  });
+
+  //メッシュ
+  const text = new THREE.Mesh(textGeometry, textMaterial);
+  scene.add(text);
+
+  textGeometry.center();
+});
+
 
 //UIデバックを実装
 const gui = new dat.GUI();
@@ -34,6 +65,7 @@ const renderer = new THREE.WebGLRenderer({
   //背景設定
   alpha: true
 });
+console.log(renderer);
 
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -59,7 +91,7 @@ const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(), material);
 
 //メッシュの配置設定
 mesh1.position.set(0, -2, -3);
-mesh2.position.set(-1, 0, 0);
+mesh2.position.set(-1, 0, -3);
 mesh3.position.set(2, 2, -5);
 mesh4.position.set(-3, 1, -4);
 
@@ -67,7 +99,7 @@ scene.add(mesh1, mesh2, mesh3, mesh4);
 const meshes = [mesh1, mesh2, mesh3, mesh4];
 
 //ライトを追加
-const directionallight = new THREE.DirectionalLight("ffffff", 2);
+const directionallight = new THREE.DirectionalLight("#8d96b9", 2);
 directionallight.position.set(0.5, 1, 0);
 scene.add(directionallight);
 
@@ -87,6 +119,7 @@ window.addEventListener("resize", () => {
 });
 
 //アニメーション
+//デルタ
 const clock = new THREE.Clock();
 
 const animate = () => {
