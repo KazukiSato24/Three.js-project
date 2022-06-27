@@ -55,7 +55,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.z = 6
+camera.position.z = 7
 scene.add(camera)
 
 //レンダラー
@@ -83,17 +83,16 @@ gui.add(material, "metalness").min(0).max(3).step(0.001);
 gui.add(material, "roughness").min(0).max(1).step(0.001);
 
 //メッシュ
-const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.4, 16, 60), material);
-const mesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(), material);
-const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.35, 100, 16), material);
-const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(), material);
+const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.1, 16, 60), material);
+const mesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(0.8), material);
+const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), material);
+const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
 
 //メッシュの配置設定
 mesh1.position.set(0, -2, -3);
-mesh2.position.set(-1, 0, -3);
+mesh2.position.set(-1, -1, -3);
 mesh3.position.set(2, 2, -5);
-mesh4.position.set(-3, 1, -4);
-
+mesh4.position.set(-3, 2, -4);
 scene.add(mesh1, mesh2, mesh3, mesh4);
 const meshes = [mesh1, mesh2, mesh3, mesh4];
 
@@ -130,11 +129,11 @@ function rot() {
   speed *= 0.93;
 
   //ジオメトリ全体を回転させる
-  mesh1.position.x = 2 + 3.8 * Math.cos(rotation);
+  mesh1.position.x = 0 + 3.8 * Math.cos(rotation);
   mesh1.position.z = -2 + 3.8 * Math.sin(rotation);
-  mesh2.position.x = 2 + 3.8 * Math.cos(rotation + Math.PI / 2);
+  mesh2.position.x = -1 + 3.8 * Math.cos(rotation + Math.PI / 2);
   mesh2.position.z = -2 + 3.8 * Math.sin(rotation + Math.PI / 2);
-  mesh3.position.x = 2 + 3.8 * Math.cos(rotation + Math.PI);
+  mesh3.position.x = 0 + 3.8 * Math.cos(rotation + Math.PI);
   mesh3.position.z = -2 + 3.8 * Math.sin(rotation + Math.PI);
   mesh4.position.x = 2 + 3.8 * Math.cos(rotation + 3 * (Math.PI / 2));
   mesh4.position.z = -2 + 3.8 * Math.sin(rotation + 3 * (Math.PI / 2));
