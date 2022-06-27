@@ -3,6 +3,7 @@ import * as THREE from "three";
 import * as dat from "lil-gui";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 //フォント
 const fontLoader = new FontLoader();
@@ -10,10 +11,10 @@ console.log(fontLoader);
 
 fontLoader.load('./fonts/droid/droid_serif_regular.typeface.json', function (font) {
   console.log(font);
-  const textGeometry = new TextGeometry('SAUVAGE', {
+  const textGeometry = new TextGeometry('MOODIFY', {
     font: font,
     size: 0.5,
-    height: 0.5,
+    height: 0.3,
   });
 
   //フォントマテリアル
@@ -55,7 +56,7 @@ const camera = new THREE.PerspectiveCamera(
   100
 );
 
-camera.position.z = 7
+camera.position.set(2, 1, 8);
 scene.add(camera)
 
 //レンダラー
@@ -68,6 +69,7 @@ console.log(renderer);
 
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(window.devicePixelRatio);
+document.body.appendChild(renderer.domElement);
 
 //オブジェクトを作成
 //マテリアル
@@ -120,7 +122,7 @@ window.addEventListener("resize", () => {
 let speed = 0;
 let rotation = 0;
 window.addEventListener("wheel", (event) => {
-  speed += event.deltaY * 0.0002;
+  speed += event.deltaY * 0.002;
   console.log(speed);
 });
 
@@ -139,11 +141,14 @@ function rot() {
   mesh4.position.z = -2 + 3.8 * Math.sin(rotation + 3 * (Math.PI / 2));
   window.requestAnimationFrame(rot);
 }
-
 rot();
+
 //アニメーション
 //デルタ
 const clock = new THREE.Clock();
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
 
 const animate = () => {
   renderer.render(scene, camera);
@@ -156,6 +161,32 @@ const animate = () => {
     mesh.rotation.x += 0.1 * getDeltaTime;
     mesh.rotation.y += 0.2 * getDeltaTime;
   }
+  controls.update();
 };
 
 animate();
+
+//パーティクル
+const particlesGeometory = new THREE.BufferGeometry();
+const count = 5000;
+
+const positionArray = new Float32Array(count * 3);
+
+//パーティクルマテリアル
+const pointMaterial = new THREE.PointsMaterial({
+  size: 0.04,
+  sizeAttenuation: true,
+  color: "#989db9",
+});
+
+const particles = new THREE.Points(particlesGeometory, pointMaterial);
+scene.add(particles);
+
+for (let i = 0; i < count * 3; i++) {
+  positionArray[i] = (Math.random() - 0.5) * 20;
+}
+
+particlesGeometory.setAttribute(
+  "position",
+  new THREE.BufferAttribute(positionArray, 3)
+);
