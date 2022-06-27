@@ -3,7 +3,6 @@ import * as THREE from "three";
 import * as dat from "lil-gui";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
-import { CubeReflectionMapping } from 'three';
 
 //フォント
 const fontLoader = new FontLoader();
@@ -99,7 +98,7 @@ scene.add(mesh1, mesh2, mesh3, mesh4);
 const meshes = [mesh1, mesh2, mesh3, mesh4];
 
 //ライトを追加
-const directionallight = new THREE.DirectionalLight("#8d96b9", 2);
+const directionallight = new THREE.DirectionalLight("#8d96b9", 5);
 directionallight.position.set(0.5, 1, 0);
 scene.add(directionallight);
 
@@ -118,6 +117,31 @@ window.addEventListener("resize", () => {
   renderer.setPixelRatio(window.devicePixelRatio);
 });
 
+//ホイールを実装
+let speed = 0;
+let rotation = 0;
+window.addEventListener("wheel", (event) => {
+  speed += event.deltaY * 0.0002;
+  console.log(speed);
+});
+
+function rot() {
+  rotation += speed;
+  speed *= 0.93;
+
+  //ジオメトリ全体を回転させる
+  mesh1.position.x = 2 + 3.8 * Math.cos(rotation);
+  mesh1.position.z = -2 + 3.8 * Math.sin(rotation);
+  mesh2.position.x = 2 + 3.8 * Math.cos(rotation + Math.PI / 2);
+  mesh2.position.z = -2 + 3.8 * Math.sin(rotation + Math.PI / 2);
+  mesh3.position.x = 2 + 3.8 * Math.cos(rotation + Math.PI);
+  mesh3.position.z = -2 + 3.8 * Math.sin(rotation + Math.PI);
+  mesh4.position.x = 2 + 3.8 * Math.cos(rotation + 3 * (Math.PI / 2));
+  mesh4.position.z = -2 + 3.8 * Math.sin(rotation + 3 * (Math.PI / 2));
+  window.requestAnimationFrame(rot);
+}
+
+rot();
 //アニメーション
 //デルタ
 const clock = new THREE.Clock();
