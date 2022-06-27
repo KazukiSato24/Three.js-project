@@ -3,6 +3,7 @@ import * as THREE from "three";
 import * as dat from "lil-gui";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 //フォント
 const fontLoader = new FontLoader();
@@ -159,3 +160,28 @@ const animate = () => {
 };
 
 animate();
+
+//パーティクル
+const particlesGeometory = new THREE.BufferGeometry();
+const count = 5000;
+
+const positionArray = new Float32Array(count * 3);
+
+//パーティクルマテリアル
+const pointMaterial = new THREE.PointsMaterial({
+  size: 0.02,
+  sizeAttenuation: true,
+  color: "#e0642e",
+});
+
+const particles = new THREE.Points(particlesGeometory, pointMaterial);
+scene.add(particles);
+
+for (let i = 0; i < count * 3; i++) {
+  positionArray[i] = (Math.random() - 0.5) * 10;
+}
+
+particlesGeometory.setAttribute(
+  "position",
+  new THREE.BufferAttribute(positionArray, 3)
+);
