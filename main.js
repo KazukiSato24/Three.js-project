@@ -5,234 +5,213 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-//フォント
-const fontLoader = new FontLoader();
-console.log(fontLoader);
+let scene, camera, renderer, directionallight, controls;
+window.addEventListener("load", init);
 
-fontLoader.load('./fonts/droid/droid_serif_regular.typeface.json', function (font) {
-  console.log(font);
-  const textGeometry = new TextGeometry('MOODIFY', {
-    font: font,
-    size: 0.5,
-    height: 0.3,
+function init() {
+
+  //サイズ設定
+  const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+
+  //シーン
+  scene = new THREE.Scene();
+
+  //カメラ
+  camera = new THREE.PerspectiveCamera(
+    35,
+    sizes.width / sizes.height,
+    0.1,
+    100
+  );
+
+  //キャンバスの取得
+  const canvas = document.querySelector(".webgl");
+
+
+  camera.position.set(2, 1, 8);
+  scene.add(camera)
+
+  //レンダラー
+  renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    //背景設定
+    alpha: true
   });
+  console.log(renderer);
 
-  //フォントマテリアル
-  const textMaterial = new THREE.MeshPhysicalMaterial({
-    emissive: "#d3d9d9",
-    metalness: 1,
-    roughness: 0.5,
-    clearcoat: 1,
-  });
-
-  //メッシュ
-  const text = new THREE.Mesh(textGeometry, textMaterial);
-  scene.add(text);
-
-  textGeometry.center();
-});
-
-
-//UIデバックを実装
-const gui = new dat.GUI();
-
-//キャンバスの取得
-const canvas = document.querySelector(".webgl");
-
-//シーン
-const scene = new THREE.Scene();
-
-//サイズ設定
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
-
-//カメラ
-const camera = new THREE.PerspectiveCamera(
-  35,
-  sizes.width / sizes.height,
-  0.1,
-  100
-);
-
-camera.position.set(2, 1, 8);
-scene.add(camera)
-
-//レンダラー
-const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
-  //背景設定
-  alpha: true
-});
-console.log(renderer);
-
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(window.devicePixelRatio);
-document.body.appendChild(renderer.domElement);
-
-//オブジェクトを作成
-//マテリアル
-const material = new THREE.MeshPhysicalMaterial({
-  color: "#8d96b9",
-  roughness: 0.336,
-  flatShading: true,
-  metalness: 0.7,
-});
-
-gui.addColor(material, "color");
-gui.add(material, "metalness").min(0).max(3).step(0.001);
-gui.add(material, "roughness").min(0).max(1).step(0.001);
-
-//メッシュ
-const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.1, 16, 60), material);
-const mesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(0.8), material);
-const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), material);
-const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
-const mesh5 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
-const mesh6 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), material);
-const mesh7 = new THREE.Mesh(new THREE.OctahedronGeometry(0.8), material);
-const mesh8 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.1, 16, 60), material);
-
-//メッシュの配置設定
-mesh1.position.set(4, 2, 0);
-mesh2.position.set(4, -2, 0);
-mesh3.position.set(-4, 2, 0);
-mesh4.position.set(-4, -2, 0);
-mesh5.position.set(4, 2, -5);
-mesh6.position.set(4, -2, -5);
-mesh7.position.set(-4, 2, -5);
-mesh8.position.set(-4, -2, -5);
-scene.add(mesh1, mesh2, mesh3, mesh4, mesh5, mesh6, mesh7, mesh8);
-const meshes = [mesh1, mesh2, mesh3, mesh5, mesh4, mesh6, mesh7, mesh8];
-
-//ブラウザのリサイズ操作
-window.addEventListener("resize", () => {
-  //サイズのアップデート
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
-
-  //カメラのアップデート
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-
-  //レンダラーのアップデート
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(window.devicePixelRatio);
-});
+  document.body.appendChild(renderer.domElement);
 
-//ホイールを実装
-let speed = 0;
-let rotation = 0;
-window.addEventListener("wheel", (event) => {
-  speed += event.deltaY * 0.002;
-  console.log(speed);
-});
+  //マウス操作
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
 
-// function rot() {
-//   rotation += speed;
-//   speed *= 0.93;
+  //UIデバックを実装
+  const gui = new dat.GUI();
 
-//   //ジオメトリ全体を回転させる
-//   mesh1.position.x = 0 + 3.8 * Math.cos(rotation);
-//   mesh1.position.z = 0 + 3.8 * Math.sin(rotation);
-//   mesh2.position.x = 0 + 3.8 * Math.cos(rotation + Math.PI / 2);
-//   mesh2.position.z = 0 + 3.8 * Math.sin(rotation + Math.PI / 2);
-//   mesh3.position.x = 0 + 3.8 * Math.cos(rotation + Math.PI);
-//   mesh3.position.z = 0 + 3.8 * Math.sin(rotation + Math.PI);
-//   mesh4.position.x = 0 + 3.8 * Math.cos(rotation + 3 * (Math.PI / 2));
-//   mesh4.position.z = 0 + 3.8 * Math.sin(rotation + 3 * (Math.PI / 2));
-//   window.requestAnimationFrame(rot);
-// }
-// rot();
+  //フォント
+  const fontLoader = new FontLoader();
 
-//地球
-//テクスチャを追加
-const textures = new THREE.TextureLoader().load("./textures/earth.jpg");
+  fontLoader.load('./fonts/droid/droid_serif_regular.typeface.json', function (font) {
+    console.log(font);
+    const textGeometry = new TextGeometry('MOODIFY', {
+      font: font,
+      size: 0.5,
+      height: 0.3,
+    });
 
-//ジオメトリを作成
-const ballGeometry = new THREE.SphereGeometry(2.5);
+    //フォントマテリアル
+    const textMaterial = new THREE.MeshPhysicalMaterial({
+      emissive: "#d3d9d9",
+      metalness: 1,
+      roughness: 0.5,
+      clearcoat: 1,
+    });
 
-//マテリアルを作成 材質やカラーを設定
-const ballMaterial = new THREE.MeshPhysicalMaterial({ map: textures });
+    //メッシュ
+    const text = new THREE.Mesh(textGeometry, textMaterial);
+    scene.add(text);
 
-//メッシュ化
-const ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
-ballMesh.position.set(0, 0, -3);
+    textGeometry.center();
+  });
 
-//シーンに載せる
-scene.add(ballMesh);
+  //オブジェクトを作成
+  //マテリアル
+  const material = new THREE.MeshPhysicalMaterial({
+    color: "#8d96b9",
+    roughness: 0.336,
+    flatShading: true,
+    metalness: 0.7,
+  });
+
+  gui.addColor(material, "color");
+  gui.add(material, "metalness").min(0).max(3).step(0.001);
+  gui.add(material, "roughness").min(0).max(1).step(0.001);
+
+  //メッシュ
+  const mesh1 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.1, 16, 60), material);
+  const mesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(0.8), material);
+  const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), material);
+  const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
+  const mesh5 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
+  const mesh6 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), material);
+  const mesh7 = new THREE.Mesh(new THREE.OctahedronGeometry(0.8), material);
+  const mesh8 = new THREE.Mesh(new THREE.TorusGeometry(1, 0.1, 16, 60), material);
+
+  //メッシュの配置設定
+  mesh1.position.set(4, 2, 0);
+  mesh2.position.set(4, -2, 0);
+  mesh3.position.set(-4, 2, 0);
+  mesh4.position.set(-4, -2, 0);
+  mesh5.position.set(4, 2, -5);
+  mesh6.position.set(4, -2, -5);
+  mesh7.position.set(-4, 2, -5);
+  mesh8.position.set(-4, -2, -5);
+  scene.add(mesh1, mesh2, mesh3, mesh4, mesh5, mesh6, mesh7, mesh8);
+  const meshes = [mesh1, mesh2, mesh3, mesh5, mesh4, mesh6, mesh7, mesh8];
+
+  //地球
+  //テクスチャを追加
+  const textures = new THREE.TextureLoader().load("./textures/earth.jpg");
+
+  //ジオメトリを作成
+  const ballGeometry = new THREE.SphereGeometry(2.5);
+
+  //マテリアルを作成 材質やカラーを設定
+  const ballMaterial = new THREE.MeshPhysicalMaterial({ map: textures });
+
+  //メッシュ化
+  const ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
+  ballMesh.position.set(0, 0, -3);
+
+  //シーンに載せる
+  scene.add(ballMesh);
+
+  function animate() {
+    renderer.render(scene, camera);
+    window.requestAnimationFrame(animate);
+
+    let getDeltaTime = clock.getDelta();
+
+    //メッシュを回転させる for文
+    for (const mesh of meshes) {
+      mesh.rotation.x += 0.5 * getDeltaTime;
+      mesh.rotation.y += 0.2 * getDeltaTime;
+    }
+
+    ballMesh.rotation.y += 0.1 * getDeltaTime;
+
+    controls.update();
+  };
+
+  //パーティクル
+  const particlesGeometory = new THREE.BufferGeometry();
+  const count = 6000;
+
+  const positionArray = new Float32Array(count * 3);
+  const colorArray = new Float32Array(count * 3);
+
+  //パーティクルテクスチャ
+  const textureLoader = new THREE.TextureLoader();
+  const particlesTexture = textureLoader.load("./textures/light.png");
 
 
-//アニメーション
-//デルタ
-const clock = new THREE.Clock();
+  //パーティクルマテリアル
+  const pointMaterial = new THREE.PointsMaterial({
+    size: 0.12,
+    sizeAttenuation: true,
+    alphaMap: particlesTexture,
+    transparent: true,
+    depthWrite: false,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
+  });
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-const animate = () => {
-  renderer.render(scene, camera);
-  window.requestAnimationFrame(animate);
+  const particles = new THREE.Points(particlesGeometory, pointMaterial);
+  scene.add(particles);
 
-  let getDeltaTime = clock.getDelta();
-
-  //メッシュを回転させる for文
-  for (const mesh of meshes) {
-    mesh.rotation.x += 0.5 * getDeltaTime;
-    mesh.rotation.y += 0.2 * getDeltaTime;
+  for (let i = 0; i < count * 3; i++) {
+    positionArray[i] = (Math.random() - 0.5) * 20;
+    colorArray[i] = Math.random();
   }
 
-  ballMesh.rotation.y += 0.1 * getDeltaTime;
+  particlesGeometory.setAttribute(
+    "position",
+    new THREE.BufferAttribute(positionArray, 3)
+  );
 
-  controls.update();
-};
+  //パーティクルの座標ごとに色を取得
+  particlesGeometory.setAttribute(
+    "color",
+    new THREE.BufferAttribute(colorArray, 3)
+  );
 
-animate();
+  //ライトを追加
+  directionallight = new THREE.DirectionalLight("#8d96b9", 5);
+  directionallight.position.set(0.5, 1, 0);
+  scene.add(directionallight);
 
+  const clock = new THREE.Clock();
 
-//パーティクルテクスチャ
-const textureLoader = new THREE.TextureLoader();
-const particlesTexture = textureLoader.load("./textures/light.png");
+  //ブラウザのリサイズ操作
+  function onWindowResize() {
+    //サイズのアップデート
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
 
+    //カメラのアップデート
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
 
-//パーティクル
-const particlesGeometory = new THREE.BufferGeometry();
-const count = 6000;
+    //レンダラーのアップデート
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(window.devicePixelRatio);
+  };
 
-const positionArray = new Float32Array(count * 3);
-const colorArray = new Float32Array(count * 3);
-
-//パーティクルマテリアル
-const pointMaterial = new THREE.PointsMaterial({
-  size: 0.12,
-  sizeAttenuation: true,
-  alphaMap: particlesTexture,
-  transparent: true,
-  depthWrite: false,
-  vertexColors: true,
-  blending: THREE.AdditiveBlending,
-});
-
-const particles = new THREE.Points(particlesGeometory, pointMaterial);
-scene.add(particles);
-
-for (let i = 0; i < count * 3; i++) {
-  positionArray[i] = (Math.random() - 0.5) * 20;
-  colorArray[i] = Math.random();
+  animate();
+  onWindowResize();
 }
-
-particlesGeometory.setAttribute(
-  "position",
-  new THREE.BufferAttribute(positionArray, 3)
-);
-
-//パーティクルの座標ごとに色を取得
-particlesGeometory.setAttribute(
-  "color",
-  new THREE.BufferAttribute(colorArray, 3)
-);
-
-//ライトを追加
-const directionallight = new THREE.DirectionalLight("#8d96b9", 5);
-directionallight.position.set(0.5, 1, 0);
-scene.add(directionallight);
