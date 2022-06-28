@@ -5,7 +5,7 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-let scene, camera, renderer, directionallight, controls;
+let scene, camera, renderer, directionallight, pointLight, controls;
 window.addEventListener("load", init);
 
 function init() {
@@ -145,6 +145,12 @@ function init() {
 
     ballMesh.rotation.y += 0.1 * getDeltaTime;
 
+    pointLight.position.set(
+      200 * Math.sin(Date.now() / 500),
+      200 * Math.sin(Date.now() / 1000),
+      200 * Math.cos(Date.now() / 500)
+    );
+
     controls.update();
   };
 
@@ -190,10 +196,17 @@ function init() {
     new THREE.BufferAttribute(colorArray, 3)
   );
 
-  //ライトを追加
+  //並行光源を追加
   directionallight = new THREE.DirectionalLight("#8d96b9", 5);
   directionallight.position.set(0.5, 1, 0);
   scene.add(directionallight);
+
+  //ポイント光源を追加 地球の周りで動かすためグローバル変数として宣言
+  pointLight = new THREE.PointLight(0xffffff, 1);
+  scene.add(pointLight);
+
+  //ポイント光源の位置を設定
+  pointLight.position.set(-50, -50, -50);
 
   const clock = new THREE.Clock();
 
