@@ -106,11 +106,6 @@ mesh8.position.set(-4, -2, -5);
 scene.add(mesh1, mesh2, mesh3, mesh4, mesh5, mesh6, mesh7, mesh8);
 const meshes = [mesh1, mesh2, mesh3, mesh5, mesh4, mesh6, mesh7, mesh8];
 
-//ライトを追加
-const directionallight = new THREE.DirectionalLight("#8d96b9", 5);
-directionallight.position.set(0.5, 1, 0);
-scene.add(directionallight);
-
 //ブラウザのリサイズ操作
 window.addEventListener("resize", () => {
   //サイズのアップデート
@@ -236,3 +231,8 @@ particlesGeometory.setAttribute(
   "color",
   new THREE.BufferAttribute(colorArray, 3)
 );
+
+//ライトを追加
+const directionallight = new THREE.DirectionalLight("#8d96b9", 5);
+directionallight.position.set(0.5, 1, 0);
+scene.add(directionallight);
