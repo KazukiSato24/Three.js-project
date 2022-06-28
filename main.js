@@ -91,10 +91,10 @@ const mesh3 = new THREE.Mesh(new THREE.TorusKnotGeometry(0.8, 0.2, 100, 16), mat
 const mesh4 = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
 
 //メッシュの配置設定
-mesh1.position.set(0, -2, -3);
+mesh1.position.set(0, 2, -3);
 mesh2.position.set(-1, -1, -3);
 mesh3.position.set(2, 2, -5);
-mesh4.position.set(-3, 2, -4);
+mesh4.position.set(-1, -1, -8);
 scene.add(mesh1, mesh2, mesh3, mesh4);
 const meshes = [mesh1, mesh2, mesh3, mesh4];
 
@@ -138,10 +138,28 @@ function rot() {
   mesh3.position.x = 0 + 3.8 * Math.cos(rotation + Math.PI);
   mesh3.position.z = -2 + 3.8 * Math.sin(rotation + Math.PI);
   mesh4.position.x = 2 + 3.8 * Math.cos(rotation + 3 * (Math.PI / 2));
-  mesh4.position.z = -2 + 3.8 * Math.sin(rotation + 3 * (Math.PI / 2));
+  mesh4.position.z = 0 + 3.8 * Math.sin(rotation + 3 * (Math.PI / 2));
   window.requestAnimationFrame(rot);
 }
 rot();
+
+//地球
+//テクスチャを追加
+const textures = new THREE.TextureLoader().load("./textures/earth.jpg");
+
+//ジオメトリを作成
+const ballGeometry = new THREE.SphereGeometry(2.3);
+
+//マテリアルを作成 材質やカラーを設定
+const ballMaterial = new THREE.MeshPhysicalMaterial({ map: textures });
+
+//メッシュ化
+const ballMesh = new THREE.Mesh(ballGeometry, ballMaterial);
+ballMesh.position.set(0, 0, -3);
+
+//シーンに載せる
+scene.add(ballMesh);
+
 
 //アニメーション
 //デルタ
@@ -149,7 +167,6 @@ const clock = new THREE.Clock();
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-
 const animate = () => {
   renderer.render(scene, camera);
   window.requestAnimationFrame(animate);
@@ -158,9 +175,12 @@ const animate = () => {
 
   //メッシュを回転させる for文
   for (const mesh of meshes) {
-    mesh.rotation.x += 0.1 * getDeltaTime;
+    mesh.rotation.x += 0.5 * getDeltaTime;
     mesh.rotation.y += 0.2 * getDeltaTime;
   }
+
+  ballMesh.rotation.y += 0.1 * getDeltaTime;
+
   controls.update();
 };
 
