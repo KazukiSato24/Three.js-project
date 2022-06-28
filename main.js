@@ -194,17 +194,28 @@ const animate = () => {
 
 animate();
 
+
+//パーティクルテクスチャ
+const textureLoader = new THREE.TextureLoader();
+const particlesTexture = textureLoader.load("./textures/light.png");
+
+
 //パーティクル
 const particlesGeometory = new THREE.BufferGeometry();
-const count = 5000;
+const count = 6000;
 
 const positionArray = new Float32Array(count * 3);
+const colorArray = new Float32Array(count * 3);
 
 //パーティクルマテリアル
 const pointMaterial = new THREE.PointsMaterial({
-  size: 0.04,
+  size: 0.12,
   sizeAttenuation: true,
-  color: "#989db9",
+  alphaMap: particlesTexture,
+  transparent: true,
+  depthWrite: false,
+  vertexColors: true,
+  blending: THREE.AdditiveBlending,
 });
 
 const particles = new THREE.Points(particlesGeometory, pointMaterial);
@@ -212,9 +223,16 @@ scene.add(particles);
 
 for (let i = 0; i < count * 3; i++) {
   positionArray[i] = (Math.random() - 0.5) * 20;
+  colorArray[i] = Math.random();
 }
 
 particlesGeometory.setAttribute(
   "position",
   new THREE.BufferAttribute(positionArray, 3)
+);
+
+//パーティクルの座標ごとに色を取得
+particlesGeometory.setAttribute(
+  "color",
+  new THREE.BufferAttribute(colorArray, 3)
 );
